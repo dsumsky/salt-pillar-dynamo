@@ -148,13 +148,15 @@ def ext_pillar(minion_id, pillar, **kw):
     '''
 
     table_name = kw.get('table', None)
+    region = kw.get('region', 'us-east-1')
+    
     if not table_name:
         # table is not set in config
         raise SaltInvocationError('ext_pillar.dynamo: table name is not defined in ext_pillar config!')
     id_field = kw.get('id_field', 'id')
 
     try:
-        minion_table = Table(table_name)
+        minion_table = Table(table_name, connection = boto.dynamodb2.connect_to_region(region))
         log.debug("ext_pillar.dynamo: Connected to table `%s`"% table_name)
 
     except Exception, e:
